@@ -69,13 +69,27 @@ def run(primary: str, target: str, backend: str, auto: bool) -> dict:
     """7 bước chuẩn hóa phản ứng sự cố."""
     t_start = time.time()
 
-    # 1. Xác nhận outage (probe cả 2 region)
+    # 1. Xác nhận outage (probe cả 2 region & chờ health checker phát hiện)
     chaos_log = pathlib.Path("chaos/chaos-events.jsonl")
     t_outage = None
     if chaos_log.exists():
         kills = [json.loads(line) for line in chaos_log.read_text().splitlines() if line.strip() and json.loads(line).get("action") == "kill"]
         if kills:
             t_outage = kills[-1]["ts"]
+
+    # Chờ health checker phát hiện UNHEALTHY để đảm bảo ngưỡng anti-flap
+    health_log = pathlib.Path("reports/health-events.jsonl")
+    start_wait = time.time()
+    while time.time() - start_wait < 30:
+        if health_log.exists():
+            hev = [json.loads(line) for line in health_log.read_text().splitlines()
+                   if line.strip() and json.loads(line).get("event") == "state_change"
+                   and json.loads(line).get("to") == "UNHEALTHY"
+                   and json.loads(line).get("region") == primary
+                   and (t_outage is None or json.loads(line).get("ts") >= t_outage)]
+            if hev:
+                break
+        time.sleep(0.5)
 
     p_alive = False
     try:
