@@ -8,10 +8,10 @@ Con số không có evidence = trượt, bất kể các phần khác.
 
 | Chỉ số | Giá trị | Cách đo | Evidence |
 |---|---|---|---|
-| t_outage | `<iso>` | chaos kill | `chaos/chaos-events.jsonl:1` |
-| Request fail đầu tiên | `+__s` | dòng `ok:false` đầu tiên sau t_outage | `reports/drill-1-nodr.jsonl:__` |
-| Request thành công sau đó | không có | không có dòng `ok:true` nào sau t_outage | `reports/measure-drill-1.json` |
-| RTO | `NO_RECOVERY` | `tools/measure_rto.py` | `reports/measure-drill-1.json` |
+| t_outage | `2026-08-25T08:33:52` | chaos kill | `chaos/chaos-events.jsonl:1` |
+| Request fail đầu tiên | `+0.2s` | dòng `ok:false` đầu tiên sau t_outage | `reports/drill-1-nodr.jsonl:17` |
+| Request thành công sau đó | không có | không có dòng `ok:true` nào sau t_outage | `reports/drill-1-nodr.jsonl` |
+| RTO | `NO_RECOVERY` | `tools/measure_rto.py` | `reports/drill-1-nodr.jsonl` |
 
 ## 2. Drill 2 — có DR
 
